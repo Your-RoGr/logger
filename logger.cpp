@@ -1,92 +1,265 @@
 #include "logger.h"
 
-Logger::Logger(const std::string& filename, size_t maxEntries) : maxEntries(maxEntries), filename(filename) {
-    fileStream.open(filename, std::ios::app);
-    logLevel = LogLevel::INFO; // Устанавливаем уровень логирования по умолчанию
-    logFormat = "[%timestamp%] [%level%] %message%";
-    logFilter = "";
-    logOutputChannel = "file";
-    threadSafe = false;
+
+// Logger class implementation
+Logger::Logger(const std::string& filename_, size_t max_entries_) {
+    if (is_valid_filename(filename_) && max_entries_ > 0) {
+        filename = filename_;
+        max_entries = max_entries_;
+        max_entries_counter = max_entries_;
+        add_current_files();
+        delete_all_files();
+        open_file();
+    } else {
+        throw std::runtime_error("Invalid filename or max_entries. Filename must be a valid file name "
+                                 "R\"([a-zA-Z0-9_]+\\.(txt|log))\" and max_entries must be greater than 0.");
+    }
 }
 
 Logger::~Logger() {
-    if (fileStream.is_open()) {
-        fileStream.close();
+    if (file_stream.is_open()) {
+        file_stream.close();
     }
-}
-
-void Logger::setLogLevel(LogLevel level) {
-    logLevel = level;
 }
 
 void Logger::log(LogLevel level, const std::string& message) {
-    if (level >= logLevel) {
-        std::string timestamp = getFormattedTimestamp();
-        std::string levelString = getLogLevelString(level);
-        std::string formattedMessage = logFormat;
-        // Заменяем плейсхолдеры в формате сообщения
-        formattedMessage = replacePlaceholder(formattedMessage, "%timestamp%", timestamp);
-        formattedMessage = replacePlaceholder(formattedMessage, "%level%", levelString);
-        formattedMessage = replacePlaceholder(formattedMessage, "%message%", message);
+    if (level >= log_level && (file || console)) {
+        std::string timestamp = get_formatted_timestamp();
+        std::string level_string = get_log_level_string(level);
+        std::string formatted_message = log_format;
 
-        if (threadSafe) {
-            // Если потокобезопасность включена, выполняем блокировку перед записью в очередь
-            // и разблокировку после записи
-            std::lock_guard<std::mutex> lock(mutex);
-            logQueue.push(formattedMessage);
-        } else {
-            logQueue.push(formattedMessage);
+        formatted_message = replace_placeholder(formatted_message, "%timestamp%", timestamp);
+        formatted_message = replace_placeholder(formatted_message, "%level%", level_string);
+        formatted_message = replace_placeholder(formatted_message, "%message%", message);
+
+        if (file) {
+            log_queue_file.push(formatted_message);
+            write_logs_file();
         }
-
-        // Проверяем, достигнуто ли максимальное количество записей, и записываем логи в файл
-        if (logQueue.size() >= maxEntries) {
-            writeLogsToFile();
+        if (console) {
+            log_queue_console.push(formatted_message);
+            write_logs_to_console();
         }
     }
-}
-
-void Logger::error(const std::string& errorMessage) {
-    log(LogLevel::ERROR, errorMessage);
-}
-
-void Logger::setLogFormat(const std::string& format) {
-    logFormat = format;
-}
-
-void Logger::addLogFile(const std::string& filename_) {
-    // Проверяем, открыт ли уже файловый поток. Если да, закрываем его
-    if (fileStream.is_open()) {
-        fileStream.close();
-    }
-
-    // Открываем новый файловый поток для добавленного лог-файла
-    std::ofstream newFileStream(filename_, std::ios::app);
-    if (newFileStream.is_open()) {
-        // Добавляем новый файловый поток в вектор файловых потоков
-        fileStreams.push_back(std::move(newFileStream));
+    else if (!(file || console)) {
+        std::cout << "No one log input use" << std::endl;
     }
 }
 
-void Logger::setLogFilter(const std::string& filter) {
-    logFilter = filter;
+void Logger::info(const std::string& info_message) {
+    log(LogLevel::INFO, info_message);
 }
 
-void Logger::addLogOutputChannel(const std::string& channel) {
-    logOutputChannel = channel;
+void Logger::debug(const std::string& debug_message) {
+    log(LogLevel::DEBUG, debug_message);
 }
 
-void Logger::setThreadSafe(bool threadSafe_) {
-    this->threadSafe = threadSafe_;
+void Logger::warning(const std::string& warning_message) {
+    log(LogLevel::WARNING, warning_message);
 }
 
-std::string Logger::getFormattedTimestamp() {
+void Logger::error(const std::string& error_message) {
+    log(LogLevel::ERROR, error_message);
+}
+
+void Logger::set_log_level(Logger::LogLevel level) {
+    log_level = level;
+}
+
+void Logger::set_log_format(const std::string &format) {
+
+    const std::string required_elements[] = {
+            "%timestamp%",
+            "%level%",
+            "%message%"
+    };
+
+    bool is_valid_format = false;
+    for (const std::string &element : required_elements) {
+        if (format.find(element) != std::string::npos) {
+            is_valid_format = true;
+            break;
+        }
+    }
+
+    if (is_valid_format) {
+        log_format = format;
+    } else {
+        throw std::runtime_error("Invalid log format. The format must contain at least one of the following elements: "
+                                 "%timestamp%, %level%, %message%");
+    }
+}
+
+void Logger::set_use_console_log(bool console_) {
+    console = console_;
+}
+
+void Logger::set_use_file_log(bool file_) {
+    file = file_;
+}
+
+void Logger::set_clear_all(bool clear_all_) {
+    clear_all = clear_all_;
+}
+
+void Logger::set_filename(const std::string& filename_, size_t max_entries_) {
+
+    if (is_valid_filename(filename_) && max_entries_ > 0) {
+        while (!log_queue_files.empty()) log_queue_files.pop();
+        if (file_stream.is_open()) {
+            file_stream.close();
+        }
+
+        log_file_number = 0;
+        filename = filename_;
+        max_entries = max_entries_;
+        max_entries_counter = max_entries_;
+        add_current_files();
+        delete_all_files();
+        open_file();
+    } else {
+        throw std::runtime_error("Invalid filename or max_entries. Filename must be a valid file name "
+                                 "R\"([a-zA-Z0-9_]+\\.(txt|log))\") and max_entries must be greater than 0.");
+    }
+}
+
+void Logger::set_max_entries(size_t max_entries_) {
+
+    if (max_entries - max_entries_counter < max_entries_) {
+        if (log_file_number + 1 == max_files) {
+            log_file_number = 0;
+        }
+        else ++log_file_number;
+    }
+
+    max_entries = max_entries_;
+    max_entries_counter = max_entries;
+}
+
+void Logger::set_max_files(size_t max_files_) {
+    max_files = max_files_;
+}
+
+void Logger::open_file() {
+    while(true) {
+        if (!log_queue_files.empty()) {
+            while (max_files < log_queue_files.size() + 1 && max_files != 0) delete_first_file();
+        }
+
+        if (max_entries > get_count_of_lines() || max_entries == 0) {
+            break;
+        }
+        log_queue_files.push('#' + std::to_string(log_file_number) + filename);
+
+        if (log_file_number + 1 == max_files) {
+            log_file_number = 0;
+        }
+        else ++log_file_number;
+    }
+
+    file_stream.open('#' + std::to_string(log_file_number) + filename, std::ios::app);
+    log_queue_files.push('#' + std::to_string(log_file_number) + filename);
+}
+
+void Logger::delete_first_file() {
+    std::filesystem::path file_path(log_queue_files.front());
+
+    try {
+        std::filesystem::remove(file_path);
+        log_queue_files.pop();
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cout << "Error deleting file: " << e.what() << std::endl;
+    }
+}
+
+void Logger::delete_all_files() {
+    if (clear_all) {
+        while(!log_queue_files.empty()) {
+            delete_first_file();
+        }
+    }
+}
+
+void Logger::write_logs_to_file() {
+
+    if (!file_stream.is_open()) {
+        open_file();
+    }
+
+    while (!log_queue_file.empty()) {
+        std::string log_entry = log_queue_file.front();
+        log_queue_file.pop();
+        file_stream << log_entry << std::endl;
+    }
+
+}
+
+void Logger::write_logs_file() {
+    if (max_entries_counter >= log_queue_file.size() || max_entries == 0) {
+        max_entries_counter -= log_queue_file.size();
+        write_logs_to_file();
+    }
+    else {
+        max_entries_counter = max_entries;
+        if (file_stream.is_open()) {
+            file_stream.close();
+        }
+
+        if (log_file_number + 1 == max_files) {
+            log_file_number = 0;
+        }
+        else ++log_file_number;
+
+        open_file();
+        write_logs_to_file();
+    }
+}
+
+void Logger::write_logs_to_console() {
+    while (!log_queue_console.empty()) {
+        std::string log_entry = log_queue_console.front();
+        log_queue_console.pop();
+        std::cout << log_entry << std::endl;
+    }
+}
+
+void Logger::add_current_files() {
+    for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path().string())) {
+        std::string temp = entry.path().filename().string();
+        if (entry.is_regular_file() && temp.find(filename) != std::string::npos) {
+            log_queue_files.push(temp);
+        }
+    }
+}
+
+size_t Logger::get_count_of_lines() {
+
+    std::ifstream ifile('#' + std::to_string(log_file_number) + filename);
+
+    if (ifile.is_open()) {
+        size_t line_count = std::count(std::istreambuf_iterator<char>(ifile),
+                                       std::istreambuf_iterator<char>(), '\n');
+        ifile.close();
+
+        return line_count;
+    } else {
+        return 0;
+    }
+}
+
+bool Logger::is_valid_filename(const std::string& filename) {
+    std::regex pattern(R"([a-zA-Z0-9_]+\.(txt|log))");
+    return std::regex_match(filename, pattern);
+}
+
+std::string Logger::get_formatted_timestamp() {
     std::time_t now = std::time(nullptr);
     char timestamp[20];
-    std::strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+    std::strftime(timestamp, sizeof(timestamp), "%d-%m-%Y %H:%M:%S", std::localtime(&now));
     return {timestamp};
 }
 
-std::string Logger::getLogLevelString(LogLevel level) {
+std::string Logger::get_log_level_string(Logger::LogLevel level) {
     switch (level) {
         case LogLevel::DEBUG:
             return "DEBUG";
@@ -101,36 +274,16 @@ std::string Logger::getLogLevelString(LogLevel level) {
     }
 }
 
-std::string Logger::replacePlaceholder(const std::string& format, const std::string& placeholder, const std::string& value) {
+std::string Logger::replace_placeholder(const std::string& format, const std::string& placeholder,
+                                        const std::string& value) {
+
     std::string result = format;
     size_t pos = result.find(placeholder);
+
     while (pos != std::string::npos) {
         result.replace(pos, placeholder.length(), value);
         pos = result.find(placeholder, pos + value.length());
     }
+
     return result;
-}
-
-void Logger::writeLogsToFile() {
-    // Проверяем, есть ли открытый файловый поток
-    if (!fileStream.is_open()) {
-        // Если открытого файлового потока нет, открываем его снова
-        fileStream.open(filename, std::ios::app);
-    }
-
-    // Записываем логи из очереди в основной файл логов
-    while (!logQueue.empty()) {
-        std::string logEntry = logQueue.front();
-        logQueue.pop();
-        fileStream << logEntry << std::endl;
-    }
-
-    // Записываем логи из очереди в дополнительные файлы логов
-    for (std::ofstream& fs : fileStreams) {
-        while (!logQueue.empty()) {
-            std::string logEntry = logQueue.front();
-            logQueue.pop();
-            fs << logEntry << std::endl;
-        }
-    }
 }

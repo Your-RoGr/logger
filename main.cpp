@@ -2,62 +2,94 @@
 #include "logger.h"
 
 int main() {
-    // Создаем объект логгера и указываем имя файла логов и максимальное количество записей
-    Logger logger("logfile.txt", 10);
+    Logger logger("logfile.txt", 8);
 
-    // Устанавливаем уровень логирования
-    logger.setLogLevel(Logger::LogLevel::DEBUG);
+    logger.log(Logger::LogLevel::DEBUG, "console Debug message");
+    logger.log(Logger::LogLevel::INFO, "console Info message");
+    logger.log(Logger::LogLevel::WARNING, "console Warning message");
+    logger.log(Logger::LogLevel::ERROR, "console Error message");
+    logger.debug("console Debug message");
+    logger.info("console Info message");
+    logger.warning("console Warning message");
+    logger.error("console Error message");
 
-    // Записываем логи
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    logger.set_log_level(Logger::LogLevel::DEBUG);
+    logger.set_use_file_log(true);
 
-    // Устанавливаем формат логов
-    logger.setLogFormat("[%level%] %message%");
+    system("pause");
 
-    // Записываем логи с новым форматом
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    for (int i = 0; i < 10; ++i) {
+        logger.log(Logger::LogLevel::DEBUG, "file and console Debug message");
+        logger.log(Logger::LogLevel::INFO, "file and console Info message");
+        logger.log(Logger::LogLevel::WARNING, "file and console Warning message");
+        logger.log(Logger::LogLevel::ERROR, "file and console Error message");
+        logger.debug("file and console Debug message");
+        logger.info("file and console Info message");
+        logger.warning("file and console Warning message");
+        logger.error("file and console Error message");
+    }
 
-    // Добавляем новый лог-файл
-    logger.addLogFile("additional_logfile.txt");
+    system("pause");
 
-    // Записываем логи в новый файл
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    logger.set_log_format("[%level%] [%timestamp%] %message%");
 
-    // Устанавливаем фильтр для логов
-    logger.setLogFilter("DEBUG");
+    logger.log(Logger::LogLevel::DEBUG, "file and console Debug message");
+    logger.log(Logger::LogLevel::INFO, "file and console Info message");
+    logger.log(Logger::LogLevel::WARNING, "file and console Warning message");
+    logger.log(Logger::LogLevel::ERROR, "file and console Error message");
+    logger.debug("file and console Debug message");
+    logger.info("file and console Info message");
+    logger.warning("file and console Warning message");
+    logger.error("file and console Error message");
 
-    // Записываем отфильтрованные логи
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    logger.set_clear_all(false);
+    logger.set_filename("additional_logfile.log");
 
-    // Добавляем дополнительный канал вывода
-    logger.addLogOutputChannel("console");
+    logger.set_log_format("[%timestamp%] [%level%] %message%");
 
-    // Записываем логи в основной файл и в консоль
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    logger.log(Logger::LogLevel::DEBUG, "file and console Debug message");
+    logger.log(Logger::LogLevel::INFO, "file and console Info message");
+    logger.log(Logger::LogLevel::WARNING, "file and console Warning message");
+    logger.log(Logger::LogLevel::ERROR, "file and console Error message");
+    logger.debug("file and console Debug message");
+    logger.info("file and console Info message");
+    logger.warning("file and console Warning message");
+    logger.error("file and console Error message");
 
-    // Устанавливаем потокобезопасность
-    logger.setThreadSafe(true);
+    logger.set_use_console_log(false);
 
-    // Записываем потокобезопасные логи
-    logger.log(Logger::LogLevel::DEBUG, "Debug message");
-    logger.log(Logger::LogLevel::INFO, "Info message");
-    logger.log(Logger::LogLevel::WARNING, "Warning message");
-    logger.log(Logger::LogLevel::ERROR, "Error message");
+    logger.log(Logger::LogLevel::DEBUG, "file Debug message");
+    logger.log(Logger::LogLevel::INFO, "file Info message");
+    logger.log(Logger::LogLevel::WARNING, "file Warning message");
+    logger.log(Logger::LogLevel::ERROR, "file Error message");
+    logger.debug("file Debug message");
+    logger.info("file Info message");
+    logger.warning("file Warning message");
+    logger.error("file Error message");
+
+    logger.log(Logger::LogLevel::DEBUG, "file Debug message");
+    logger.log(Logger::LogLevel::INFO, "file Info message");
+    logger.log(Logger::LogLevel::WARNING, "file Warning message");
+    logger.log(Logger::LogLevel::ERROR, "file Error message");
+    logger.debug("file Debug message");
+    logger.info("file Info message");
+    logger.warning("file Warning message");
+    logger.error("file Error message");
+
+    system("pause");
+
+    logger.set_max_entries(4);
+    logger.set_max_files(1);
+
+    logger.log(Logger::LogLevel::DEBUG, "file Debug message");
+    logger.log(Logger::LogLevel::INFO, "file Info message");
+    logger.log(Logger::LogLevel::WARNING, "file Warning message");
+    logger.log(Logger::LogLevel::ERROR, "file Error message");
+    logger.debug("file Debug message");
+    logger.info("file Info message");
+    logger.warning("file Warning message");
+    logger.error("file Error message");
+
     system("pause");
     return 0;
 }
