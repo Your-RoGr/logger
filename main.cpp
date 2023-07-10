@@ -2,7 +2,7 @@
 #include "logger.h"
 
 int main() {
-    Logger logger("logfile.txt", 8);
+    Logger logger("logfile.txt", "", 8);
 
     logger.log(Logger::LogLevel::DEBUG, "console Debug message");
     logger.log(Logger::LogLevel::INFO, "console Info message");
@@ -89,6 +89,36 @@ int main() {
     logger.info("file Info message");
     logger.warning("file Warning message");
     logger.error("file Error message");
+
+    system("pause");
+
+    logger.set_max_files(0);
+
+    for (int i = 0; i < 10; ++i) {
+        logger.log(Logger::LogLevel::DEBUG, "file Debug message");
+        logger.log(Logger::LogLevel::INFO, "file Info message");
+        logger.log(Logger::LogLevel::WARNING, "file Warning message");
+        logger.log(Logger::LogLevel::ERROR, "file Error message");
+        logger.debug("file Debug message");
+        logger.info("file Info message");
+        logger.warning("file Warning message");
+        logger.error("file Error message");
+    }
+
+    system("pause");
+
+    logger.set_max_entries(0);
+
+    for (int i = 0; i < 10; ++i) {
+        logger.log(Logger::LogLevel::DEBUG, "file Debug message");
+        logger.log(Logger::LogLevel::INFO, "file Info message");
+        logger.log(Logger::LogLevel::WARNING, "file Warning message");
+        logger.log(Logger::LogLevel::ERROR, "file Error message");
+        logger.debug("file Debug message");
+        logger.info("file Info message");
+        logger.warning("file Warning message");
+        logger.error("file Error message");
+    }
 
     system("pause");
     return 0;
