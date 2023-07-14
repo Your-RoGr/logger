@@ -32,7 +32,7 @@ Logger::~Logger() {
 }
 
 void Logger::log(LogLevel level, const std::string& message) {
-    if (level >= log_level && (file || console)) {
+    if (file || console) {
         std::string timestamp = get_formatted_timestamp();
         std::string level_string = get_log_level_string(level);
         std::string formatted_message = log_format;
@@ -41,15 +41,15 @@ void Logger::log(LogLevel level, const std::string& message) {
         formatted_message = replace_placeholder(formatted_message, "%level%", level_string);
         formatted_message = replace_placeholder(formatted_message, "%message%", message);
 
-        if (file) {
+        if (file && level >= log_level_file) {
             log_queue_file.push(formatted_message);
             write_logs_file();
         }
-        if (console) {
+        if (console && level >= log_level_console) {
             log_queue_console.push(formatted_message);
             write_logs_to_console();
         }
-    } else if (!(file || console)) {
+    } else {
         std::cout << "No one log input use" << std::endl;
     }
 }
@@ -71,7 +71,16 @@ void Logger::error(const std::string& error_message) {
 }
 
 void Logger::set_log_level(Logger::LogLevel level) {
-    log_level = level;
+    log_level_console = level;
+    log_level_file = level;
+}
+
+void Logger::set_log_level_console(Logger::LogLevel level) {
+    log_level_console = level;
+}
+
+void Logger::set_log_level_file(Logger::LogLevel level) {
+    log_level_file = level;
 }
 
 void Logger::set_log_format(const std::string &format) {

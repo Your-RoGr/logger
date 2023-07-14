@@ -24,7 +24,8 @@ public:
 private:
     std::string filename {};
     std::ofstream file_stream {};
-    LogLevel log_level = LogLevel::INFO;
+    LogLevel log_level_console = LogLevel::INFO;
+    LogLevel log_level_file = LogLevel::WARNING;
     std::string log_format = "[%timestamp%] [%level%] %message%";
     std::string path_folder {};
     bool console = true;
@@ -49,6 +50,10 @@ public:
     void error(const std::string& error_message);
     // LogLevel::INFO by default
     void set_log_level(LogLevel level);
+    // LogLevel::WARNING by default
+    void set_log_level_console(LogLevel level);
+    // LogLevel::INFO by default
+    void set_log_level_file(LogLevel level);
     // "[%timestamp%] [%level%] %message%" by default
     void set_log_format(const std::string& format);
     // true by default
