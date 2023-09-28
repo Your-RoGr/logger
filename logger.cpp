@@ -2,12 +2,13 @@
 
 
 // Logger class implementation
-Logger::Logger(const std::string& filename_, const std::string& path_folder_, size_t max_entries_) {
+Logger::Logger(const std::string& filename_, const std::string& path_folder_, size_t max_entries_, size_t max_files_) {
     if (is_valid_filename(filename_) && is_valid_path_folder(path_folder_) && max_entries_ > 0) {
         filename = filename_;
+        path_folder = path_folder_;
         max_entries = max_entries_;
         max_entries_counter = max_entries_;
-        path_folder = path_folder_;
+        max_files = max_files_;
 
         try {
             create_folder();
@@ -41,14 +42,9 @@ void Logger::log(LogLevel level, const std::string& message) {
         formatted_message = replace_placeholder(formatted_message, "%level%", level_string);
         formatted_message = replace_placeholder(formatted_message, "%message%", message);
 
-        if (file && level >= log_level_file) {
-            log_queue_file.push(formatted_message);
-            write_logs_file();
-        }
-        if (console && level >= log_level_console) {
-            log_queue_console.push(formatted_message);
-            write_logs_to_console();
-        }
+        if (file && level >= log_level_file) write_logs_file(formatted_message);
+        if (console && level >= log_level_console) write_logs_to_console(formatted_message);
+
     } else {
         std::cout << "No one log input use" << std::endl;
     }
@@ -220,24 +216,19 @@ void Logger::delete_all_files() {
     }
 }
 
-void Logger::write_logs_to_file() {
+void Logger::write_logs_to_file(const std::string& formatted_message) {
 
     if (!file_stream.is_open()) {
         open_file();
     }
 
-    while (!log_queue_file.empty()) {
-        std::string log_entry = log_queue_file.front();
-        log_queue_file.pop();
-        file_stream << log_entry << std::endl;
-    }
-
+    file_stream << formatted_message << std::endl;
 }
 
-void Logger::write_logs_file() {
-    if (max_entries_counter >= log_queue_file.size() || max_entries == 0) {
-        max_entries_counter -= log_queue_file.size();
-        write_logs_to_file();
+void Logger::write_logs_file(const std::string& formatted_message) {
+    if (max_entries_counter > 0 || max_entries == 0) {
+        max_entries_counter -= 1;
+        write_logs_to_file(formatted_message);
     } else {
         max_entries_counter = max_entries;
         if (file_stream.is_open()) {
@@ -249,16 +240,12 @@ void Logger::write_logs_file() {
         } else ++log_file_number;
 
         open_file();
-        write_logs_to_file();
+        write_logs_to_file(formatted_message);
     }
 }
 
-void Logger::write_logs_to_console() {
-    while (!log_queue_console.empty()) {
-        std::string log_entry = log_queue_console.front();
-        log_queue_console.pop();
-        std::cout << log_entry << std::endl;
-    }
+void Logger::write_logs_to_console(const std::string& formatted_message) {
+    std::cout << formatted_message << std::endl;
 }
 
 void Logger::add_current_files() {

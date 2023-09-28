@@ -6,7 +6,6 @@
 #include <queue>
 #include <string>
 #include <ctime>
-#include <vector>
 #include <regex>
 #include <filesystem>
 
@@ -32,15 +31,13 @@ private:
     bool file = false;
     bool clear_all = false;
     std::queue<std::string> log_queue_files {};
-    std::queue<std::string> log_queue_file {};
-    std::queue<std::string> log_queue_console {};
     size_t max_entries {};
     size_t max_entries_counter {};
-    size_t max_files = 5;
+    size_t max_files {};
     size_t log_file_number = 0;
 public:
     explicit Logger(const std::string& filename_, const std::string& path_folder_ = "logs",
-                    size_t max_entries_ = 1000000);
+                    size_t max_entries_ = 1000000, size_t max_files_ = 5);
     ~Logger();
 
     void log(LogLevel level, const std::string& message);
@@ -73,12 +70,12 @@ private:
     void open_file();
     void delete_first_file();
     void delete_all_files();
-    void write_logs_to_file();
-    void write_logs_file();
-    void write_logs_to_console();
+    void write_logs_to_file(const std::string& formatted_message);
+    void write_logs_file(const std::string& formatted_message);
     void add_current_files();
     void create_folder();
     size_t get_count_of_lines();
+    static void write_logs_to_console(const std::string& formatted_message);
     static bool is_valid_filename(const std::string& filename);
     static bool is_valid_path_folder(const std::string& path_folder);
     static std::string get_formatted_timestamp();

@@ -1,7 +1,10 @@
-#include <iostream>
 #include "logger.h"
+#include "timer.h"
 
 int main() {
+
+    Timer T {};
+
     Logger logger("logfile.txt", "", 8);
 
     logger.log(Logger::LogLevel::DEBUG, "console Debug message");
@@ -16,7 +19,7 @@ int main() {
     logger.set_log_level(Logger::LogLevel::DEBUG);
     logger.set_use_file_log(true);
 
-    system("pause");
+    // system("pause");
 
     for (int i = 0; i < 10; ++i) {
         logger.log(Logger::LogLevel::DEBUG, "file and console Debug message");
@@ -29,7 +32,7 @@ int main() {
         logger.error("file and console Error message");
     }
 
-    system("pause");
+    // system("pause");
 
     logger.set_log_format("[%level%] [%timestamp%] %message%");
 
@@ -76,7 +79,7 @@ int main() {
     logger.warning("file Warning message");
     logger.error("file Error message");
 
-    system("pause");
+    // system("pause");
 
     logger.set_max_entries(4);
     logger.set_max_files(1);
@@ -90,7 +93,7 @@ int main() {
     logger.warning("file Warning message");
     logger.error("file Error message");
 
-    system("pause");
+    // system("pause");
 
     logger.set_max_files(0);
 
@@ -105,7 +108,7 @@ int main() {
         logger.error("file Error message");
     }
 
-    system("pause");
+    // system("pause");
 
     logger.set_max_entries(0);
 
@@ -120,6 +123,6 @@ int main() {
         logger.error("file Error message");
     }
 
-    system("pause");
+    // system("pause");
     return 0;
 }
