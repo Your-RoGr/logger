@@ -50,12 +50,12 @@ void Logger::log(LogLevel level, const std::string& message) {
     }
 }
 
-void Logger::info(const std::string& info_message) {
-    log(LogLevel::INFO, info_message);
-}
-
 void Logger::debug(const std::string& debug_message) {
     log(LogLevel::DEBUG, debug_message);
+}
+
+void Logger::info(const std::string& info_message) {
+    log(LogLevel::INFO, info_message);
 }
 
 void Logger::warning(const std::string& warning_message) {

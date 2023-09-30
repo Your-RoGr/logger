@@ -1,11 +1,14 @@
 #include "logger.h"
 #include "timer.h"
 
+
 int main() {
 
     Timer T {};
 
     Logger logger("logfile.txt", "", 8);
+
+    logger.set_use_file_log(false);
 
     logger.log(Logger::LogLevel::DEBUG, "console Debug message");
     logger.log(Logger::LogLevel::INFO, "console Info message");

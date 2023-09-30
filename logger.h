@@ -28,7 +28,7 @@ private:
     std::string log_format = "[%timestamp%] [%level%] %message%";
     std::string path_folder {};
     bool console = true;
-    bool file = false;
+    bool file = true;
     bool clear_all = false;
     std::queue<std::string> log_queue_files {};
     size_t max_entries {};
@@ -41,11 +41,11 @@ public:
     ~Logger();
 
     void log(LogLevel level, const std::string& message);
-    void info(const std::string& info_message);
     void debug(const std::string& debug_message);
+    void info(const std::string& info_message);
     void warning(const std::string& warning_message);
     void error(const std::string& error_message);
-    // LogLevel::INFO by default
+
     void set_log_level(LogLevel level);
     // LogLevel::WARNING by default
     void set_log_level_console(LogLevel level);
