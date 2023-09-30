@@ -2,11 +2,11 @@
 
 Данный репозиторий посвящен программе логеру на C++
 
-- [Features](##Features)
-- [Tech](##Tech)
-- [Installation](##Installation)
-- [Usage](##Usage)
-- [Files](##Files)
+- [Features](#Features)
+- [Tech](#Tech)
+- [Installation](#Installation)
+- [Usage](#Usage)
+- [Files](#Files)
 
 ## Features
 
