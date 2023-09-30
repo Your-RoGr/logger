@@ -2,6 +2,12 @@
 
 Данный репозиторий посвящен программе логеру на C++
 
+- [Features](##Features)
+- [Tech](##Tech)
+- [Installation](##Installation)
+- [Usage](##Usage)
+- [Files](##Files)
+
 ## Features
 
 Уровни логирования реализованы в виде enum class LogLevel:
