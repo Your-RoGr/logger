@@ -19,27 +19,27 @@
 | WARNING | Logger::LogLevel::WARNING |
 | ERROR | Logger::LogLevel::ERROR |
 
-Имеются следующие функии сеттеры для полей:
+Имеются следующие функции сеттеры для полей:
 
-| Функия сеттер | Аргументы | Значение полей в class Logger | Описание |
-| ------ | ------ | ------ |  ------ | 
-| set_log_level | LogLevel level | - | Устанавливает уровень логирования для консоли и файла |
+| Функция сеттер        | Аргументы | Значение полей в class Logger | Описание |
+|-----------------------| ------ | ------ |  ------ | 
+| set_log_level         | LogLevel level | - | Устанавливает уровень логирования для консоли и файла |
 | set_log_level_console | LogLevel level | LogLevel::WARNING | Устанавливает уровень логирования для консоли |
-| set_log_level_file | LogLevel level | LogLevel::INFO | Устанавливает уровень логирования для файла |
-| set_log_format | const std::string& format | [%timestamp%] [%level%] %message%" | Устанавливает формат вывода логов |
-| set_use_console_log | bool console_ | true | Устанавливает флаг использования вывода в консоль (_true_ включить) |
-| set_use_file_log | bool file_ | true | Устанавливает флаг использования вывода в файлы (_true_ включить) |
-| set_clear_all | bool clear_all_ | false | При _true_ удаляет все файлы логов в директории (с таким же наименованием) при создании объекта класса Logger или при вызове set_filename |
-| set_filename | const std::string& filename_, const std::string& path_folder_ = "logs", size_t max_entries_ = 1000000 | const std::string& path_folder_ = "logs", size_t max_entries_ = 1000000 | Устанвливает новое название файлов |
-| set_max_entries | size_t max_entries_ | size_t max_entries_ = 1000000 | Устанвливает количество записей в одном файле |
-| set_max_files | size_t max_files_ | size_t max_files_ = 5 | Устанавливает максимальное количество файлов |
+| set_log_level_file    | LogLevel level | LogLevel::INFO | Устанавливает уровень логирования для файла |
+| set_log_format        | const std::string& format | [%timestamp%] [%level%] %message%" | Устанавливает формат вывода логов |
+| set_use_console_log   | bool console_ | true | Устанавливает флаг использования вывода в консоль (_true_ включить) |
+| set_use_file_log      | bool file_ | true | Устанавливает флаг использования вывода в файлы (_true_ включить) |
+| set_clear_all         | bool clear_all_ | false | При _true_ удаляет все файлы логов в директории (с таким же наименованием) при создании объекта класса Logger или при вызове set_filename |
+| set_filename          | const std::string& filename_, const std::string& path_folder_ = "logs", size_t max_entries_ = 1000000 | const std::string& path_folder_ = "logs", size_t max_entries_ = 1000000 | Устанвливает новое название файлов |
+| set_max_entries       | size_t max_entries_ | size_t max_entries_ = 1000000 | Устанвливает количество записей в одном файле |
+| set_max_files         | size_t max_files_ | size_t max_files_ = 5 | Устанавливает максимальное количество файлов |
 
 ## Tech
 
 Для работы Logger использует стандарт&nbsp; _C++20_:
 
 - [MinGW](https://winlibs.com/) - Компилятор MinGW
-> При тестировании испльзовался следующий компилятор:
+> При тестировании использовался следующий компилятор:
 > GCC 13.2.0 (with POSIX threads) + LLVM/Clang/LLD/LLDB 16.0.6 + MinGW-w64 11.0.0 (UCRT) - release 1
 - [cppreference](https://ru.cppreference.com/w/cpp/20) - Всё о стандарте&nbsp; _C++20_
 
@@ -47,7 +47,7 @@
 
 1. Архив с компилятором необходимо разархивировать в удобное место (обычно в _C:\mingw64_)
 2. Добавить в переменные среды в системные переменные в Path: _C:\mingw64_ и _C:\mingw64\bin_
-4. Проверить работоспособность компилятора в консоле:
+4. Проверить работоспособность компилятора в консоли:
 ```sh
 gcc -v
 ```
