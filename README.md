@@ -24,8 +24,8 @@
 | Функция сеттер        | Аргументы | Значение полей в class Logger | Описание |
 |-----------------------| ------ | ------ |  ------ | 
 | set_log_level         | LogLevel level | - | Устанавливает уровень логирования для консоли и файла |
-| set_log_level_console | LogLevel level | LogLevel::WARNING | Устанавливает уровень логирования для консоли |
-| set_log_level_file    | LogLevel level | LogLevel::INFO | Устанавливает уровень логирования для файла |
+| set_log_level_console | LogLevel level | LogLevel::INFO | Устанавливает уровень логирования для консоли |
+| set_log_level_file    | LogLevel level | LogLevel::WARNING | Устанавливает уровень логирования для файла |
 | set_log_format        | const std::string& format | [%timestamp%] [%level%] %message%" | Устанавливает формат вывода логов |
 | set_use_console_log   | bool console_ | true | Устанавливает флаг использования вывода в консоль (_true_ включить) |
 | set_use_file_log      | bool file_ | true | Устанавливает флаг использования вывода в файлы (_true_ включить) |
