@@ -46,16 +46,18 @@ public:
     void warning(const std::string& warning_message);
     void error(const std::string& error_message);
 
+    // LogLevel::INFO by default for console
+    // LogLevel::WARNING by default for file
     void set_log_level(LogLevel level);
-    // LogLevel::WARNING by default
-    void set_log_level_console(LogLevel level);
     // LogLevel::INFO by default
+    void set_log_level_console(LogLevel level);
+    // LogLevel::WARNING by default
     void set_log_level_file(LogLevel level);
     // "[%timestamp%] [%level%] %message%" by default
     void set_log_format(const std::string& format);
     // true by default
     void set_use_console_log(bool console_);
-    // false by default
+    // true by default
     void set_use_file_log(bool file_);
     // false by default
     void set_clear_all(bool clear_all_);
